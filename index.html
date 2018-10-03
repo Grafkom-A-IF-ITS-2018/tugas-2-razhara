@@ -133,7 +133,7 @@
         letterVertexColorBuffer = gl.createBuffer()
         gl.bindBuffer(gl.ARRAY_BUFFER, letterVertexColorBuffer)
         var colors = []
-        for (var i=0; i < 17; i++) {
+        for (var i=0; i < 13; i++) {
             colors = colors.concat([0.0, 1.0, 0.0, 0.5]);
         }
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW)
