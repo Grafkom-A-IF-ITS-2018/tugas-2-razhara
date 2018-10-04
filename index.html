@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Tugas 1</title>
+    <title>Tugas 2</title>
     <meta http-equiv="content-type" content="text/html" charset="ISO-8859-1">
 
     <script type="text/javascript" src="gl-matrix-min.js"></script>
@@ -142,26 +142,26 @@
         // Square Position
         cubeVertexPositionBuffer = gl.createBuffer()
         gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer)
-        vertices = [
-   	      -5.0, 5.0, -7.0,
-          -5.0, 5.0, -14.0,
-          5.0,5.0,-14.0,
+        var cubevertices = [
+   	      -5.0, 5.0,0.0,
+          -5.0, 5.0,-7.0,
           5.0,5.0,-7.0,
-          -5.0, 5.0, -7.0,
+          5.0,5.0,-0.0,
+          -5.0, 5.0,0.0,
+          -5.0,-5.0,0.0,
           -5.0,-5.0,-7.0,
-          -5.0,-5.0,-14.0,
-          5.0,-5.0,-14.0,
           5.0,-5.0,-7.0,
+          5.0,-5.0,.0,
+          5.0,5.0,0.0,
           5.0,5.0,-7.0,
-          5.0,5.0,-14.0,
-          5.0,-5.0,-14.0,
-          -5.0,-5.0,-14.0,
-          -5.0,5.0,-14.0,
-          -5.0, 5.0, -7.0,
-          -5.0, -5.0, -7.0,
-          5.0, -5.0, -7.0
+          5.0,-5.0,-7.0,
+          -5.0,-5.0,-7.0,
+          -5.0,5.0,-7.0,
+          -5.0, 5.0, 0.0,
+          -5.0, -5.0, 0.0,
+          5.0, -5.0, 0.0
         ]
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cubevertices), gl.STATIC_DRAW)
         cubeVertexPositionBuffer.itemSize = 3
         cubeVertexPositionBuffer.numItems = 17
         // Square Color
@@ -175,25 +175,22 @@
         cubeVertexColorBuffer.itemSize = 4;
         cubeVertexColorBuffer.numItems = 14;
       }
+      var lmov= [0.01,0.01,0.01]
+      var lpos=[0.0, 0.0, 0.0]
+
       var rTri = 0
       var rSquare = 0
+
+      function lettermovement(){
+      	gl.bindBuffer(gl.ARRAY_BUFFER, letterVertexPositionBuffer);
+      	vertices= translateMatrix(vertices,lmov,0.01);
+      }
+
       function drawScene() {
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight)
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
         mat4.perspective(pMatrix, glMatrix.toRadian(45), gl.viewportWidth / gl.viewportHeight, 0.1, 100.0)
-        mat4.identity(mvMatrix)
-        mat4.translate(mvMatrix, mvMatrix, [0.0, 1.0, -14.0])
-        mvPushMatrix()
-        mat4.rotate(mvMatrix, mvMatrix, glMatrix.toRadian(rTri), [0.0, 1.0, 0.0])
-        //mat4.rotateY(mvMatrix, mvMatrix, glMatrix.toRadian(rTri))
-        gl.bindBuffer(gl.ARRAY_BUFFER, letterVertexPositionBuffer)
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, letterVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0)
-        gl.bindBuffer(gl.ARRAY_BUFFER, letterVertexColorBuffer)
-        gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, letterVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0)
-        setMatrixUniforms()
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, letterVertexPositionBuffer.numItems)
-        mvPopMatrix()
-        mat4.translate(mvMatrix, mvMatrix, [0.0, -1.0, -5.0])
+        mat4.translate(mvMatrix, mvMatrix, [0.0, -1.0, -2.0])
         mvPushMatrix()
         mat4.rotate(mvMatrix, mvMatrix, glMatrix.toRadian(rSquare), [0.0, 0.0, 0.0])
         //mat4.rotateX(mvMatrix, mvMatrix, glMatrix.toRadian(rSquare))
@@ -204,6 +201,20 @@
         setMatrixUniforms()
         gl.drawArrays(gl.LINE_STRIP, 0, cubeVertexPositionBuffer.numItems)
         mvPopMatrix()
+        mat4.identity(mvMatrix)
+        mat4.translate(mvMatrix, mvMatrix, [0.0,0.0,-14.0])
+        mvPushMatrix()
+        mat4.translate(mvMatrix, mvMatrix, lpos)
+        mat4.rotate(mvMatrix, mvMatrix, glMatrix.toRadian(rTri), [0.0, 1.0, 0.0])
+        //mat4.rotateY(mvMatrix, mvMatrix, glMatrix.toRadian(rTri))
+        gl.bindBuffer(gl.ARRAY_BUFFER, letterVertexPositionBuffer)
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, letterVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0)
+        gl.bindBuffer(gl.ARRAY_BUFFER, letterVertexColorBuffer)
+        gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, letterVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0)
+        setMatrixUniforms()
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, letterVertexPositionBuffer.numItems)
+        mvPopMatrix()
+        //lettermovement()
       }
       var lastTime = 0
       function animate() {
@@ -212,6 +223,9 @@
           var elapsed = timeNow - lastTime
           rTri += (90 * elapsed) / 1000.0
           rSquare += (75 * elapsed) / 1000.0
+          lpos[0]+=lmov[0]
+          lpos[1]+=lmov[1]
+          lpos[2]+=lmov[2]
         }
         lastTime = timeNow
       }
@@ -232,6 +246,6 @@
     </script>
   </head>
   <body onload="webGLStart();">
-    <canvas id="mycanvas" style="border: none" width="1500" height="1500"></canvas>
+    <canvas id="mycanvas" style="border: none" width="880" height="880"></canvas>
   </body>
 </html>
